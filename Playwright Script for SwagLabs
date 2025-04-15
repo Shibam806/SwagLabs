@@ -1,0 +1,37 @@
+const{test,expect} = require('@playwright/test');
+
+
+test('SwagLabs playwright test', async ({page}) => {
+
+    await page.goto("https://www.saucedemo.com/");
+    const credentialText = await page.locator("#login_credentials").textContent();
+    console.log(credentialText);
+    const userName = credentialText.match(/standard_user/)[0];
+    await page.locator("[placeholder='Username']").fill(userName);
+    await page.locator("[placeholder='Password']").fill("secret_sauce");
+    await page.locator("#login-button").click();
+    const dropDown =  page .locator(".product_sort_container");
+    await dropDown.selectOption('Name (Z to A)');
+    const invertoryList = page.locator("div.inventory_item_name");
+    const inventoryName = await page.locator("div.inventory_item_name").allTextContents();
+    console.log(inventoryName);
+    await dropDown.selectOption('Price (high to low)')
+    const inventoryPrice = await page.locator("div.inventory_item_price").allTextContents();
+    console.log(inventoryPrice);
+    const count = await invertoryList.count();
+    await page.locator("(//button[@id='add-to-cart-sauce-labs-fleece-jacket'])").click();
+    await page.locator("(//button[@id='add-to-cart-sauce-labs-backpack'])").click();
+    await page.locator(".shopping_cart_link").click();
+    await page.locator("#checkout").click();
+    await page.locator("#first-name").fill("Rahul");
+    await page.locator("#last-name").fill("Shetty");
+    await page.locator("#postal-code").fill("201014");
+    await page.locator("#continue").click();
+    await expect(page.locator(".inventory_item_name").first()).toHaveText("Sauce Labs Fleece Jacket");
+    await expect(page.locator(".inventory_item_name").last()).toHaveText("Sauce Labs Backpack");
+    console.log(await page.locator(".summary_total_label").textContent());
+    await page.locator("#finish").click();
+    const placeOrder = await page.locator(".complete-text").textContent();
+    console.log(placeOrder);
+
+});
